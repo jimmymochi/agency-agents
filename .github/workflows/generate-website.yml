@@ -1,0 +1,46 @@
+name: Generate Website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "academic/**"
+      - "design/**"
+      - "engineering/**"
+      - "finance/**"
+      - "game-development/**"
+      - "integrations/**"
+      - "marketing/**"
+      - "paid-media/**"
+      - "product/**"
+      - "project-management/**"
+      - "sales/**"
+      - "spatial-computing/**"
+      - "specialized/**"
+      - "strategy/**"
+      - "support/**"
+      - "testing/**"
+      - "scripts/generate-website.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate static website
+        run: python3 scripts/generate-website.py
+
+      - name: Commit generated site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git diff --cached --quiet || git commit -m "chore: regenerate website [skip ci]"
+          git push
